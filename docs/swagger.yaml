@@ -40,6 +40,13 @@ definitions:
     - identifier
     - name
     type: object
+  models.ReligionRequest:
+    properties:
+      name:
+        type: string
+    required:
+    - name
+    type: object
 host: localhost:8081
 info:
   contact:
@@ -105,6 +112,86 @@ paths:
           description: ""
           schema:
             $ref: '#/definitions/models.HTTPResponse'
+      summary: Returns all religions
+      tags:
+      - Religions
+    post:
+      consumes:
+      - application/json
+      description: Returns all religions.
+      parameters:
+      - description: Religion
+        in: body
+        name: religion
+        required: true
+        schema:
+          $ref: '#/definitions/models.ReligionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Religion'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.HTTPResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/models.HTTPResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Returns all religions
+      tags:
+      - Religions
+  /religions/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Returns all religions.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Religion'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.HTTPResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/models.HTTPResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Returns all religions
+      tags:
+      - Religions
+    patch:
+      consumes:
+      - application/json
+      description: Returns all religions.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Religion'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.HTTPResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/models.HTTPResponse'
+      security:
+      - ApiKeyAuth: []
       summary: Returns all religions
       tags:
       - Religions

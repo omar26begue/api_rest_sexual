@@ -36,5 +36,6 @@ func routerAuth(router fiber.Router) {
 
 func routerReligion(router fiber.Router) {
 	router.Get("religions", controllers.GetAllReligion)
+	router.Post("religions", /*middlewares.Protected(),*/ controllers.CreateReligion)
 }
 
