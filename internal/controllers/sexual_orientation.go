@@ -8,45 +8,45 @@ import (
 	"github.com/google/uuid"
 )
 
-// GetAllReligion godoc
+// GetAllSexualOrientation godoc
 // @Summary Returns all religions
 // @Description Returns all religions.
-// @Tags Religions
+// @Tags Sexual Orientation
 // @Accept  json
 // @Produce  json
-// @Success 200 {array} models.Religion
+// @Success 200 {array} models.SexualOrientation
 // @Failure 400 {object} models.HTTPResponse
 // @Failure default {object} models.HTTPResponse
-// @Router /religions [get]
-func GetAllReligion(c *fiber.Ctx) error {
-	religions := interfaces.GetAllReligions()
+// @Router /sexual [get]
+func GetAllSexualOrientation(c *fiber.Ctx) error {
+	sexuals := interfaces.GetAllSexualOrientation()
 
-	return json.NewEncoder(c.Status(fiber.StatusBadRequest).Type("json", "utf-8").Response().BodyWriter()).Encode(religions)
+	return json.NewEncoder(c.Status(fiber.StatusBadRequest).Type("json", "utf-8").Response().BodyWriter()).Encode(sexuals)
 }
 
-// CreateReligion godoc
+// CreateSexualOrientation godoc
 // @Summary Returns all religions
 // @Description Returns all religions.
-// @Tags Religions
+// @Tags Sexual Orientation
 // @Accept  json
 // @Produce  json
-// @Param religion body models.ReligionRequest true "Religion"
-// @Success 200 {object} models.Religion
+// @Param sexual body models.SexualOrientationRequest true "Sexual Orientation"
+// @Success 200 {object} models.SexualOrientation
 // @Failure 400 {object} models.HTTPResponse
 // @Failure default {object} models.HTTPResponse
 // @Security ApiKeyAuth
-// @Router /religions [post]
-func CreateReligion(c *fiber.Ctx) error {
-	religionRequest := new(models.ReligionRequest)
-	if err := c.BodyParser(&religionRequest); err != nil {
+// @Router /sexual [post]
+func CreateSexualOrientation(c *fiber.Ctx) error {
+	sexualRequest := new(models.SexualOrientationRequest)
+	if err := c.BodyParser(&sexualRequest); err != nil {
 		return json.NewEncoder(c.Status(fiber.StatusServiceUnavailable).Type("json", "utf-8").Response().BodyWriter()).Encode(models.HTTPResponse{Code: fiber.StatusServiceUnavailable, Message: "error"})
 	}
 
-	religion := new(models.Religion)
-	religion.Identifier = uuid.New().String()
-	religion.Name = religionRequest.Name
+	sexual := new(models.SexualOrientation)
+	sexual.Identifier = uuid.New().String()
+	sexual.Name = sexualRequest.Name
 
-	_, err := interfaces.CreateReligions(*religion)
+	_, err := interfaces.CreateSexualOrientation(*sexual)
 	if err != nil {
 		return json.NewEncoder(c.Status(fiber.StatusBadRequest).Type("json", "utf-8").Response().BodyWriter()).Encode(models.HTTPResponse{
 			Code:    fiber.StatusBadRequest,
@@ -54,35 +54,35 @@ func CreateReligion(c *fiber.Ctx) error {
 		})
 	}
 
-	return json.NewEncoder(c.Status(fiber.StatusCreated).Type("json", "utf-8").Response().BodyWriter()).Encode(religion)
+	return json.NewEncoder(c.Status(fiber.StatusCreated).Type("json", "utf-8").Response().BodyWriter()).Encode(sexual)
 }
 
-// UpdateReligion godoc
+// UpdateSexualOrientation godoc
 // @Summary Returns all religions
 // @Description Returns all religions.
-// @Tags Religions
+// @Tags Sexual Orientation
 // @Accept  json
 // @Produce  json
 // @Success 200 {object} models.Religion
 // @Failure 400 {object} models.HTTPResponse
 // @Failure default {object} models.HTTPResponse
 // @Security ApiKeyAuth
-// @Router /religions/{id} [patch]
-func UpdateReligion(c *fiber.Ctx) error {
+// @Router /sexual/{id} [patch]
+func UpdateSexualOrientation(c *fiber.Ctx) error {
 	return nil
 }
 
-// DeleteReligion godoc
+// DeleteSexualOrientation godoc
 // @Summary Returns all religions
 // @Description Returns all religions.
-// @Tags Religions
+// @Tags Sexual Orientation
 // @Accept  json
 // @Produce  json
 // @Success 200 {object} models.Religion
 // @Failure 400 {object} models.HTTPResponse
 // @Failure default {object} models.HTTPResponse
 // @Security ApiKeyAuth
-// @Router /religions/{id} [delete]
-func DeleteReligion(c *fiber.Ctx) error {
+// @Router /sexual/{id} [delete]
+func DeleteSexualOrientation(c *fiber.Ctx) error {
 	return nil
 }

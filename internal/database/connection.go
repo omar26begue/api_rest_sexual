@@ -30,6 +30,8 @@ func GetConnectionMongoDB() {
 	db := client.Database("sexualidad_app")
 
 	interfaces.InitInterfaceReligion(db)
+	interfaces.InitInterfaceSexualOrientation(db)
+	interfaces.InitInterfaceUsers(db)
 
 	return
 }
