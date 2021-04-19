@@ -5,10 +5,12 @@ import (
 	"api_rest_sexual/internal/interfaces"
 	"api_rest_sexual/internal/models"
 	"encoding/json"
+	"fmt"
 	"github.com/form3tech-oss/jwt-go"
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
+	"github.com/huandu/facebook/v2"
 	"github.com/spf13/viper"
 	"time"
 )
@@ -129,4 +131,28 @@ func LoginEmail(c *fiber.Ctx) error {
 		Token:      "Bearer " + tokenString,
 		Identifier: resultUser.Identifier,
 	})
+}
+
+// LoginEmail godoc
+// @Summary Login email
+// @Description Login email.
+// @Tags Authentication
+// @Accept  json
+// @Produce  json
+// @Param register body models.Auth true "Register"
+// @Success 200 {object} models.AuthResponse
+// @Failure 400 {object} models.HTTPResponse
+// @Failure default {object} models.HTTPResponse
+// @Router /auth/facebook [post]
+func LoginFacebook(c *fiber.Ctx) error {
+	res, err := facebook.Get("/me/?fields=id,name,email", facebook.Params{
+		//"fields": "first_name",
+		"access_token": "EAADydFwXu1kBAG24TmeiRACWA33YnwZCBLkZBkIWil08xu77x2rbdHK02mFw2P9zMuA1P5T8dTwZB0d7uPiZAeqJxbWklyWHITZB4XZCQSaUwdBZA4sqGvpN2CulmpCQRLfNmCoGGFAhziZCuPnRymR3YBZCcKVtEn1ZApwXPQliXi2UKzWTafHSIosUEOxqpuAYJclfGN3O8qeltcT6GkXUhf1OYRd6Q3tThP0I6yG8r9MwZDZD",
+	})
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+
+	fmt.Println("My latest feed story is:", res.Get("data.0.story"))
+	return nil
 }

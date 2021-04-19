@@ -107,6 +107,36 @@ info:
   title: API Rest Sexualidad - Knowdo Studio.
   version: 1.0.0
 paths:
+  /auth/facebook:
+    post:
+      consumes:
+      - application/json
+      description: Login email.
+      parameters:
+      - description: Register
+        in: body
+        name: register
+        required: true
+        schema:
+          $ref: '#/definitions/models.Auth'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.AuthResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.HTTPResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/models.HTTPResponse'
+      summary: Login email
+      tags:
+      - Authentication
   /auth/login:
     post:
       consumes:

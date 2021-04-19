@@ -34,6 +34,7 @@ func Routers(app *fiber.App) {
 func routerAuth(router fiber.Router) {
 	router.Post("/register", controllers.RegisterApp)
 	router.Post("/login", controllers.LoginEmail)
+	router.Post("/facebook", controllers.LoginFacebook)
 }
 
 func routerReligion(router fiber.Router) {
