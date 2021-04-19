@@ -1,0 +1,116 @@
+basePath: /api
+definitions:
+  models.Auth:
+    properties:
+      email:
+        example: user@users.com
+        type: string
+      password:
+        minLength: 5
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  models.AuthResponse:
+    properties:
+      identifier:
+        type: string
+      token:
+        type: string
+    type: object
+  models.HTTPResponse:
+    properties:
+      code:
+        example: 400
+        type: integer
+      error:
+        type: boolean
+      message:
+        example: status bad request
+        type: string
+    type: object
+  models.Religion:
+    properties:
+      identifier:
+        type: string
+      name:
+        type: string
+    required:
+    - identifier
+    - name
+    type: object
+host: localhost:8081
+info:
+  contact:
+    email: omar26begue@gmail.com
+    name: Omar Isalgué Begue
+  description: API Rest Sexualidad.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: API Rest Sexualidad - Knowdo Studio.
+  version: 1.0.0
+paths:
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Registration via email.
+      parameters:
+      - description: Auth
+        in: body
+        name: auth
+        required: true
+        schema:
+          $ref: '#/definitions/models.Auth'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.AuthResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.HTTPResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/models.HTTPResponse'
+      summary: Registration via email
+      tags:
+      - Authentication
+  /religions:
+    get:
+      consumes:
+      - application/json
+      description: Returns all religions.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Religion'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.HTTPResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/models.HTTPResponse'
+      summary: Returns all religions
+      tags:
+      - Religions
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
