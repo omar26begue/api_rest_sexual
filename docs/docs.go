@@ -32,6 +32,52 @@ var doc = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/auth/facebook": {
+            "post": {
+                "description": "Login email.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Login email",
+                "parameters": [
+                    {
+                        "description": "Register",
+                        "name": "register",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Facebook"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.AuthResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.HTTPResponse"
+                        }
+                    },
+                    "default": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/models.HTTPResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/auth/login": {
             "post": {
                 "description": "Login email.",
@@ -476,7 +522,31 @@ var doc = `{
         "models.AuthResponse": {
             "type": "object",
             "properties": {
+                "email": {
+                    "type": "string"
+                },
                 "identifier": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Facebook": {
+            "type": "object",
+            "required": [
+                "email",
+                "name"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "name": {
                     "type": "string"
                 },
                 "token": {
@@ -555,13 +625,9 @@ var doc = `{
         "models.UsersRequest": {
             "type": "object",
             "required": [
-                "age",
                 "email",
-                "id_religion",
                 "name",
-                "password",
-                "sex",
-                "sexual_orientation"
+                "password"
             ],
             "properties": {
                 "active": {

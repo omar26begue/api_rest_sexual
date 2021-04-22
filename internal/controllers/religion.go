@@ -21,7 +21,7 @@ import (
 func GetAllReligion(c *fiber.Ctx) error {
 	religions := interfaces.GetAllReligions()
 
-	return json.NewEncoder(c.Status(fiber.StatusBadRequest).Type("json", "utf-8").Response().BodyWriter()).Encode(religions)
+	return json.NewEncoder(c.Status(fiber.StatusOK).Type("json", "utf-8").Response().BodyWriter()).Encode(religions)
 }
 
 // CreateReligion godoc
