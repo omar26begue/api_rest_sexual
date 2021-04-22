@@ -14,10 +14,26 @@ definitions:
     type: object
   models.AuthResponse:
     properties:
+      email:
+        type: string
       identifier:
+        type: string
+      name:
         type: string
       token:
         type: string
+    type: object
+  models.Facebook:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      token:
+        type: string
+    required:
+    - email
+    - name
     type: object
   models.HTTPResponse:
     properties:
@@ -86,13 +102,9 @@ definitions:
       sexual_orientation:
         type: string
     required:
-    - age
     - email
-    - id_religion
     - name
     - password
-    - sex
-    - sexual_orientation
     type: object
 host: localhost:8081
 info:
@@ -118,7 +130,7 @@ paths:
         name: register
         required: true
         schema:
-          $ref: '#/definitions/models.Auth'
+          $ref: '#/definitions/models.Facebook'
       produces:
       - application/json
       responses:

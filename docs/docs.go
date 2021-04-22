@@ -52,7 +52,7 @@ var doc = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.Auth"
+                            "$ref": "#/definitions/models.Facebook"
                         }
                     }
                 ],
@@ -522,7 +522,31 @@ var doc = `{
         "models.AuthResponse": {
             "type": "object",
             "properties": {
+                "email": {
+                    "type": "string"
+                },
                 "identifier": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Facebook": {
+            "type": "object",
+            "required": [
+                "email",
+                "name"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "name": {
                     "type": "string"
                 },
                 "token": {
@@ -601,13 +625,9 @@ var doc = `{
         "models.UsersRequest": {
             "type": "object",
             "required": [
-                "age",
                 "email",
-                "id_religion",
                 "name",
-                "password",
-                "sex",
-                "sexual_orientation"
+                "password"
             ],
             "properties": {
                 "active": {

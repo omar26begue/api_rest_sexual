@@ -5,7 +5,6 @@ import (
 	"api_rest_sexual/internal/interfaces"
 	"api_rest_sexual/internal/models"
 	"encoding/json"
-	"fmt"
 	"github.com/form3tech-oss/jwt-go"
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
@@ -35,7 +34,7 @@ func RegisterApp(c *fiber.Ctx) error {
 	password, err := helpers.HashPassword(usersRequest.Password)
 	if err != nil {
 		return json.NewEncoder(c.Status(fiber.StatusBadRequest).Type("json", "utf-8").Response().BodyWriter()).Encode(models.HTTPResponse{
-			Code: fiber.StatusBadRequest,
+			Code:    fiber.StatusBadRequest,
 			Message: "Ha ocurrido un error inesperado en el sistema.",
 		})
 	}
@@ -49,6 +48,7 @@ func RegisterApp(c *fiber.Ctx) error {
 	users.Sex = usersRequest.Sex
 	users.IdReligion = usersRequest.IdReligion
 	users.SexualOrientation = usersRequest.SexualOrientation
+	users.Coins = 0
 	users.Active = false
 
 	_, err = interfaces.CreateUsers(*users)
@@ -59,7 +59,11 @@ func RegisterApp(c *fiber.Ctx) error {
 		})
 	}
 
-	return json.NewEncoder(c.Status(fiber.StatusCreated).Type("json", "utf-8").Response().BodyWriter()).Encode(users)
+	return json.NewEncoder(c.Status(fiber.StatusCreated).Type("json", "utf-8").Response().BodyWriter()).Encode(models.HTTPResponse{
+		Error:   false,
+		Code:    201,
+		Message: "Usuario registrado.",
+	})
 }
 
 // LoginEmail godoc
@@ -130,6 +134,8 @@ func LoginEmail(c *fiber.Ctx) error {
 	return json.NewEncoder(c.Status(fiber.StatusOK).Type("json", "utf-8").Response().BodyWriter()).Encode(models.AuthResponse{
 		Token:      "Bearer " + tokenString,
 		Identifier: resultUser.Identifier,
+		Name:       resultUser.Name,
+		Email:      resultUser.Email,
 	})
 }
 
@@ -139,20 +145,75 @@ func LoginEmail(c *fiber.Ctx) error {
 // @Tags Authentication
 // @Accept  json
 // @Produce  json
-// @Param register body models.Auth true "Register"
+// @Param register body models.Facebook true "Register"
 // @Success 200 {object} models.AuthResponse
 // @Failure 400 {object} models.HTTPResponse
 // @Failure default {object} models.HTTPResponse
 // @Router /auth/facebook [post]
 func LoginFacebook(c *fiber.Ctx) error {
-	res, err := facebook.Get("/me/?fields=id,name,email", facebook.Params{
-		//"fields": "first_name",
-		"access_token": "EAADydFwXu1kBAG24TmeiRACWA33YnwZCBLkZBkIWil08xu77x2rbdHK02mFw2P9zMuA1P5T8dTwZB0d7uPiZAeqJxbWklyWHITZB4XZCQSaUwdBZA4sqGvpN2CulmpCQRLfNmCoGGFAhziZCuPnRymR3YBZCcKVtEn1ZApwXPQliXi2UKzWTafHSIosUEOxqpuAYJclfGN3O8qeltcT6GkXUhf1OYRd6Q3tThP0I6yG8r9MwZDZD",
-	})
-	if err != nil {
-		fmt.Println(err.Error())
+	facebookR := new(models.Facebook)
+
+	// variable del formulario
+	if err := c.BodyParser(&facebookR); err != nil {
+		return json.NewEncoder(c.Status(fiber.StatusServiceUnavailable).Type("json", "utf-8").Response().BodyWriter()).Encode(models.HTTPResponse{
+			Code:    fiber.StatusServiceUnavailable,
+			Message: err.Error(),
+		})
 	}
 
-	fmt.Println("My latest feed story is:", res.Get("data.0.story"))
-	return nil
+	_, err := facebook.Get("/me/?fields=id,name,email", facebook.Params{
+		"access_token": facebookR.Token,
+	})
+	if err != nil {
+		return json.NewEncoder(c.Status(fiber.StatusBadRequest).Type("json", "utf-8").Response().BodyWriter()).Encode(models.HTTPResponse{
+			Code:    fiber.StatusBadRequest,
+			Message: "Lo sentimos no pudo completar su autentificación mediante Facebook.",
+		})
+	}
+
+	user, err := interfaces.GetUsersEmail(facebookR.Email)
+	if err != nil {
+		users := new(models.Users)
+		users.Identifier = uuid.New().String()
+		users.Name = facebookR.Name
+		users.Email = facebookR.Email
+		users.Password = "temp" + facebookR.Email
+		users.Coins = 0
+		users.Active = true
+
+		_, err = interfaces.CreateUsers(*users)
+
+		user, err = interfaces.GetUsersEmail(facebookR.Email)
+		if err != nil {
+			return json.NewEncoder(c.Status(fiber.StatusBadRequest).Type("json", "utf-8").Response().BodyWriter()).Encode(models.HTTPResponse{
+				Code:    fiber.StatusBadRequest,
+				Message: err.Error(),
+			})
+		}
+	}
+
+	token := jwt.New(jwt.SigningMethodHS256)
+	claims := token.Claims.(jwt.MapClaims)
+	claims["identifier"] = user.Identifier
+	claims["type_login"] = "facebook"
+	claims["email"] = facebookR.Email
+	claims["token_facebook"] = facebookR.Token
+	claims["expire"] = time.Now().Add(time.Hour * 72).Unix()
+
+	tokenString, err := token.SignedString([]byte(viper.GetString("SECRET_JWT")))
+	if err != nil {
+		return json.NewEncoder(c.Status(fiber.StatusBadRequest).Type("json", "utf-8").Response().BodyWriter()).Encode(models.HTTPResponse{
+			Code:    fiber.StatusBadRequest,
+			Message: err.Error(),
+		})
+	}
+
+	interfaces.UpdateToken(facebookR.Email, tokenString)
+
+	return json.NewEncoder(c.Status(fiber.StatusOK).Type("json", "utf-8").Response().BodyWriter()).Encode(models.AuthResponse{
+		Identifier: user.Identifier,
+		Token:      "Bearer " + tokenString,
+		Name:       facebookR.Name,
+		Email:      facebookR.Email,
+	})
 }

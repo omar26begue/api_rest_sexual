@@ -47,7 +47,7 @@ func GetUsersEmail(email string) (models.Users, error) {
 func CreateUsers(users models.Users) (models.Users, error) {
 	_, err := GetUsersEmail(users.Email)
 	if err == nil {
-		return models.Users{}, errors.New("Ya existe el elemento.")
+		return models.Users{}, errors.New("Ya existe un usuario autenticado con ese correo electrónico " + users.Email + " en el sistema.")
 	}
 
 	var validate = validator.New()

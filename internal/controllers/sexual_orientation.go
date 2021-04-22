@@ -21,7 +21,7 @@ import (
 func GetAllSexualOrientation(c *fiber.Ctx) error {
 	sexuals := interfaces.GetAllSexualOrientation()
 
-	return json.NewEncoder(c.Status(fiber.StatusBadRequest).Type("json", "utf-8").Response().BodyWriter()).Encode(sexuals)
+	return json.NewEncoder(c.Status(fiber.StatusOK).Type("json", "utf-8").Response().BodyWriter()).Encode(sexuals)
 }
 
 // CreateSexualOrientation godoc
