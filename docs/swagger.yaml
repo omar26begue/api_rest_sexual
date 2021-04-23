@@ -1,5 +1,43 @@
 basePath: /api
 definitions:
+  models.ArticleRequest:
+    properties:
+      category:
+        example: Hombre
+        type: string
+      sub_title:
+        example: Subtitle
+        type: string
+      title:
+        example: Title
+        type: string
+    required:
+    - category
+    - sub_title
+    - title
+    type: object
+  models.Articles:
+    properties:
+      category:
+        type: string
+      date_article:
+        type: string
+      identifier:
+        type: string
+      image_article:
+        type: string
+      image_sub_title:
+        type: string
+      sub_title:
+        type: string
+      title:
+        type: string
+    required:
+    - category
+    - identifier
+    - sub_title
+    - title
+    type: object
   models.Auth:
     properties:
       email:
@@ -44,6 +82,11 @@ definitions:
         type: boolean
       message:
         example: status bad request
+        type: string
+    type: object
+  models.Image:
+    properties:
+      image:
         type: string
     type: object
   models.Religion:
@@ -209,6 +252,35 @@ paths:
       summary: Registration via email
       tags:
       - Authentication
+  /images/articles/subtitle/{id}/photo:
+    get:
+      consumes:
+      - application/json
+      description: Download photo server
+      parameters:
+      - description: Article
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Image'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.HTTPResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/models.HTTPResponse'
+      summary: Download photo server
+      tags:
+      - Images
   /religions:
     get:
       consumes:
@@ -419,6 +491,101 @@ paths:
       summary: Returns all religions
       tags:
       - Sexual Orientation
+  /v1/articles:
+    get:
+      consumes:
+      - application/json
+      description: Returns a list of items.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Articles'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.HTTPResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/models.HTTPResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Returns a list of items
+      tags:
+      - Articles
+    post:
+      consumes:
+      - application/json
+      description: Create article.
+      parameters:
+      - description: Article
+        in: body
+        name: religion
+        required: true
+        schema:
+          $ref: '#/definitions/models.ArticleRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Articles'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.HTTPResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/models.HTTPResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create article
+      tags:
+      - Articles
+  /v1/articles/subtitle/{id}/upload:
+    post:
+      consumes:
+      - application/json
+      description: Upload an image to the server. The supported extensions are [png,
+        jpeg]
+      parameters:
+      - description: Article
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Image Subtitle
+        in: formData
+        name: subtitle
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Image'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.HTTPResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/models.HTTPResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Upload an image to the server
+      tags:
+      - Articles
 securityDefinitions:
   ApiKeyAuth:
     in: header

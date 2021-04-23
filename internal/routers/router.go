@@ -3,6 +3,7 @@ package routers
 import (
 	_ "api_rest_sexual/docs"
 	"api_rest_sexual/internal/controllers"
+	"api_rest_sexual/internal/middlewares"
 	websocket2 "api_rest_sexual/internal/websocket"
 	swagger "github.com/arsmn/fiber-swagger/v2"
 	"github.com/gofiber/fiber/v2"
@@ -34,6 +35,16 @@ func Routers(app *fiber.App) {
 			routerReligion(v1NoProte)
 			routerSexualOrientation(v1NoProte)
 		}
+
+		images := apiRouter.Group("/images")
+		{
+			routerImages(images)
+		}
+
+		v1Proteted := apiRouter.Group("/v1", middlewares.Protected())
+		{
+			routerArticles(v1Proteted)
+		}
 	}
 }
 
@@ -55,4 +66,15 @@ func routerReligion(router fiber.Router) {
 func routerSexualOrientation(router fiber.Router) {
 	router.Get("sexual", controllers.GetAllSexualOrientation)
 	router.Post("sexual", /*middlewares.Protected(),*/ controllers.CreateSexualOrientation)
+}
+
+func routerImages(router fiber.Router) {
+	router.Get("articles/subtitle/:id/photo", controllers.GetImageArticleSubtitle)
+}
+
+func routerArticles(router fiber.Router) {
+	router.Get("/articles", controllers.GetArticle)
+	router.Get("/articles", controllers.GetImageArticleSubtitle)
+	router.Post("/articles", controllers.CreateArticle)
+	router.Post("/articles/subtitle/:id/upload", controllers.UploadImageSubtitle)
 }

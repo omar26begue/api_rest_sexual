@@ -155,6 +155,50 @@
                 }
             }
         },
+        "/images/articles/subtitle/{id}/photo": {
+            "get": {
+                "description": "Download photo server",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Images"
+                ],
+                "summary": "Download photo server",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Article",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Image"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.HTTPResponse"
+                        }
+                    },
+                    "default": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/models.HTTPResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/religions": {
             "get": {
                 "description": "Returns all religions.",
@@ -484,9 +528,211 @@
                     }
                 }
             }
+        },
+        "/v1/articles": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Returns a list of items.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Articles"
+                ],
+                "summary": "Returns a list of items",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Articles"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.HTTPResponse"
+                        }
+                    },
+                    "default": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/models.HTTPResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Create article.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Articles"
+                ],
+                "summary": "Create article",
+                "parameters": [
+                    {
+                        "description": "Article",
+                        "name": "religion",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.ArticleRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/models.Articles"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.HTTPResponse"
+                        }
+                    },
+                    "default": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/models.HTTPResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/articles/subtitle/{id}/upload": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Upload an image to the server. The supported extensions are [png, jpeg]",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Articles"
+                ],
+                "summary": "Upload an image to the server",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Article",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "Image Subtitle",
+                        "name": "subtitle",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Image"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.HTTPResponse"
+                        }
+                    },
+                    "default": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/models.HTTPResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
+        "models.ArticleRequest": {
+            "type": "object",
+            "required": [
+                "category",
+                "sub_title",
+                "title"
+            ],
+            "properties": {
+                "category": {
+                    "type": "string",
+                    "example": "Hombre"
+                },
+                "sub_title": {
+                    "type": "string",
+                    "example": "Subtitle"
+                },
+                "title": {
+                    "type": "string",
+                    "example": "Title"
+                }
+            }
+        },
+        "models.Articles": {
+            "type": "object",
+            "required": [
+                "category",
+                "identifier",
+                "sub_title",
+                "title"
+            ],
+            "properties": {
+                "category": {
+                    "type": "string"
+                },
+                "date_article": {
+                    "type": "string"
+                },
+                "identifier": {
+                    "type": "string"
+                },
+                "image_article": {
+                    "type": "string"
+                },
+                "image_sub_title": {
+                    "type": "string"
+                },
+                "sub_title": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
         "models.Auth": {
             "type": "object",
             "required": [
@@ -552,6 +798,14 @@
                 "message": {
                     "type": "string",
                     "example": "status bad request"
+                }
+            }
+        },
+        "models.Image": {
+            "type": "object",
+            "properties": {
+                "image": {
+                    "type": "string"
                 }
             }
         },
