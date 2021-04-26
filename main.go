@@ -38,7 +38,7 @@ func main() {
 
 	app := fiber.New()
 	app.Use(cors.New())
-	file, err := os.OpenFile("./logs/router-" + time.Now().Format("2021-10-06") +".log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	file, err := os.OpenFile("./logs/router-" + time.Now().Format("2021-01-06") +".log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
 		log.Fatalf("error opening file: %v", err)
 	}

@@ -15,17 +15,17 @@ func InitInterfaceSexualOrientation(c *mongo.Database) {
 	colletionSexualOrientation = c.Collection("sexual_orientation")
 }
 
-func GetAllSexualOrientation() []models.Religion {
-	var religions []models.Religion
-	religions = []models.Religion{}
+func GetAllSexualOrientation() []models.SexualOrientation {
+	var religions []models.SexualOrientation
+	religions = []models.SexualOrientation{}
 
 	cursor, err := colletionSexualOrientation.Find(context.TODO(), bson.M{})
 	if err != nil {
-		return []models.Religion{}
+		return []models.SexualOrientation{}
 	}
 
 	for cursor.Next(context.TODO()) {
-		var religion models.Religion
+		var religion models.SexualOrientation
 		cursor.Decode(&religion)
 		religions = append(religions, religion)
 	}
@@ -33,19 +33,30 @@ func GetAllSexualOrientation() []models.Religion {
 	return religions
 }
 
-func GetSexualOrientation(name string) (models.Religion, error) {
-	religion := models.Religion{}
+func GetSexualOrientationIdentifier(identifier string) (models.SexualOrientation, error) {
+	religion := models.SexualOrientation{}
+
+	err := colletionSexualOrientation.FindOne(context.TODO(), bson.M{"identifier": identifier}).Decode(&religion)
+	if err != nil {
+		return models.SexualOrientation{}, errors.New("No existe el elemento solicitado.")
+	}
+
+	return religion, nil
+}
+
+func GetSexualOrientationName(name string) (models.SexualOrientation, error) {
+	religion := models.SexualOrientation{}
 
 	err := colletionSexualOrientation.FindOne(context.TODO(), bson.M{"name": name}).Decode(&religion)
 	if err != nil {
-		return models.Religion{}, errors.New("No existe el elemento solicitado.")
+		return models.SexualOrientation{}, errors.New("No existe el elemento solicitado.")
 	}
 
 	return religion, nil
 }
 
 func CreateSexualOrientation(sexual models.SexualOrientation) (models.SexualOrientation, error) {
-	_, err := GetSexualOrientation(sexual.Name)
+	_, err := GetSexualOrientationName(sexual.Name)
 	if err == nil {
 		return models.SexualOrientation{}, errors.New("Ya existe el elemento.")
 	}

@@ -1,7 +1,9 @@
 package websocket
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"github.com/antoniodipinto/ikisocket"
+)
 
-func ChatsWS(c *fiber.Ctx) error {
+func ChatsWS(ep *ikisocket.EventPayload) error {
 	return nil
 }

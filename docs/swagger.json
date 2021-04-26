@@ -529,6 +529,155 @@
                 }
             }
         },
+        "/users/image": {
+            "patch": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Update the user's profile picture.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Update the user's profile picture",
+                "parameters": [
+                    {
+                        "description": "Register",
+                        "name": "register",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.UsersImageUpdate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.AuthResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.HTTPResponse"
+                        }
+                    },
+                    "default": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/models.HTTPResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/info": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "It returns the authenticated user's information.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "summary": "It returns the authenticated user's information",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.UsersResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.HTTPResponse"
+                        }
+                    },
+                    "default": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/models.HTTPResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{id}": {
+            "patch": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "It upgrades the user's information.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "summary": "It upgrades the user's information",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Users",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Register",
+                        "name": "users",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.UsersUpdateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.HTTPResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.HTTPResponse"
+                        }
+                    },
+                    "default": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/models.HTTPResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/v1/articles": {
             "get": {
                 "security": [
@@ -676,6 +825,49 @@
                     }
                 }
             }
+        },
+        "/v1/doctors/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "It returns Doctor's information.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Doctors"
+                ],
+                "summary": "It returns Doctor's information",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Articles"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.HTTPResponse"
+                        }
+                    },
+                    "default": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/models.HTTPResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -683,17 +875,26 @@
             "type": "object",
             "required": [
                 "category",
+                "doctor_article",
                 "sub_title",
+                "text_article",
                 "title"
             ],
             "properties": {
                 "category": {
                     "type": "string",
-                    "example": "Hombre"
+                    "example": "man"
+                },
+                "doctor_article": {
+                    "type": "string",
+                    "example": "Omar Isalgue Begue"
                 },
                 "sub_title": {
                     "type": "string",
                     "example": "Subtitle"
+                },
+                "text_article": {
+                    "type": "string"
                 },
                 "title": {
                     "type": "string",
@@ -705,8 +906,10 @@
             "type": "object",
             "required": [
                 "category",
+                "doctor_article",
                 "identifier",
                 "sub_title",
+                "text_article",
                 "title"
             ],
             "properties": {
@@ -714,6 +917,9 @@
                     "type": "string"
                 },
                 "date_article": {
+                    "type": "string"
+                },
+                "doctor_article": {
                     "type": "string"
                 },
                 "identifier": {
@@ -726,6 +932,9 @@
                     "type": "string"
                 },
                 "sub_title": {
+                    "type": "string"
+                },
+                "text_article": {
                     "type": "string"
                 },
                 "title": {
@@ -861,6 +1070,21 @@
                 }
             }
         },
+        "models.UsersImageUpdate": {
+            "type": "object",
+            "required": [
+                "identifier"
+            ],
+            "properties": {
+                "identifier": {
+                    "type": "string"
+                },
+                "image": {
+                    "type": "string",
+                    "example": "asset/img/perfil1.png"
+                }
+            }
+        },
         "models.UsersRequest": {
             "type": "object",
             "required": [
@@ -888,6 +1112,83 @@
                 },
                 "password": {
                     "type": "string"
+                },
+                "sex": {
+                    "type": "string",
+                    "example": "Masculino"
+                },
+                "sexual_orientation": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.UsersResponse": {
+            "type": "object",
+            "required": [
+                "email",
+                "identifier",
+                "name"
+            ],
+            "properties": {
+                "age": {
+                    "type": "integer"
+                },
+                "coins": {
+                    "type": "integer",
+                    "example": 0
+                },
+                "email": {
+                    "type": "string",
+                    "example": "pepe@gmail.com"
+                },
+                "id_religion": {
+                    "type": "string"
+                },
+                "identifier": {
+                    "type": "string"
+                },
+                "image": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "Pepe Gonzalez"
+                },
+                "name_religion": {
+                    "type": "string"
+                },
+                "name_sexual_orientation": {
+                    "type": "string"
+                },
+                "sex": {
+                    "type": "string",
+                    "example": "Masculino"
+                },
+                "sexual_orientation": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.UsersUpdateRequest": {
+            "type": "object",
+            "required": [
+                "email",
+                "name"
+            ],
+            "properties": {
+                "age": {
+                    "type": "integer"
+                },
+                "email": {
+                    "type": "string",
+                    "example": "pepe@gmail.com"
+                },
+                "id_religion": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "Pepe Gonzalez"
                 },
                 "sex": {
                     "type": "string",

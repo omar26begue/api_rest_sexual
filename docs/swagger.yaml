@@ -3,17 +3,24 @@ definitions:
   models.ArticleRequest:
     properties:
       category:
-        example: Hombre
+        example: man
+        type: string
+      doctor_article:
+        example: Omar Isalgue Begue
         type: string
       sub_title:
         example: Subtitle
+        type: string
+      text_article:
         type: string
       title:
         example: Title
         type: string
     required:
     - category
+    - doctor_article
     - sub_title
+    - text_article
     - title
     type: object
   models.Articles:
@@ -21,6 +28,8 @@ definitions:
       category:
         type: string
       date_article:
+        type: string
+      doctor_article:
         type: string
       identifier:
         type: string
@@ -30,12 +39,16 @@ definitions:
         type: string
       sub_title:
         type: string
+      text_article:
+        type: string
       title:
         type: string
     required:
     - category
+    - doctor_article
     - identifier
     - sub_title
+    - text_article
     - title
     type: object
   models.Auth:
@@ -123,6 +136,16 @@ definitions:
     required:
     - name
     type: object
+  models.UsersImageUpdate:
+    properties:
+      identifier:
+        type: string
+      image:
+        example: asset/img/perfil1.png
+        type: string
+    required:
+    - identifier
+    type: object
   models.UsersRequest:
     properties:
       active:
@@ -148,6 +171,60 @@ definitions:
     - email
     - name
     - password
+    type: object
+  models.UsersResponse:
+    properties:
+      age:
+        type: integer
+      coins:
+        example: 0
+        type: integer
+      email:
+        example: pepe@gmail.com
+        type: string
+      id_religion:
+        type: string
+      identifier:
+        type: string
+      image:
+        type: string
+      name:
+        example: Pepe Gonzalez
+        type: string
+      name_religion:
+        type: string
+      name_sexual_orientation:
+        type: string
+      sex:
+        example: Masculino
+        type: string
+      sexual_orientation:
+        type: string
+    required:
+    - email
+    - identifier
+    - name
+    type: object
+  models.UsersUpdateRequest:
+    properties:
+      age:
+        type: integer
+      email:
+        example: pepe@gmail.com
+        type: string
+      id_religion:
+        type: string
+      name:
+        example: Pepe Gonzalez
+        type: string
+      sex:
+        example: Masculino
+        type: string
+      sexual_orientation:
+        type: string
+    required:
+    - email
+    - name
     type: object
 host: localhost:8081
 info:
@@ -491,6 +568,100 @@ paths:
       summary: Returns all religions
       tags:
       - Sexual Orientation
+  /users/{id}:
+    patch:
+      consumes:
+      - application/json
+      description: It upgrades the user's information.
+      parameters:
+      - description: Users
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Register
+        in: body
+        name: users
+        required: true
+        schema:
+          $ref: '#/definitions/models.UsersUpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.HTTPResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.HTTPResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/models.HTTPResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: It upgrades the user's information
+      tags:
+      - Users
+  /users/image:
+    patch:
+      consumes:
+      - application/json
+      description: Update the user's profile picture.
+      parameters:
+      - description: Register
+        in: body
+        name: register
+        required: true
+        schema:
+          $ref: '#/definitions/models.UsersImageUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.AuthResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.HTTPResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/models.HTTPResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update the user's profile picture
+      tags:
+      - Users
+  /users/info:
+    get:
+      consumes:
+      - application/json
+      description: It returns the authenticated user's information.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.UsersResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.HTTPResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/models.HTTPResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: It returns the authenticated user's information
+      tags:
+      - Users
   /v1/articles:
     get:
       consumes:
@@ -586,6 +757,33 @@ paths:
       summary: Upload an image to the server
       tags:
       - Articles
+  /v1/doctors/{id}:
+    get:
+      consumes:
+      - application/json
+      description: It returns Doctor's information.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Articles'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.HTTPResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/models.HTTPResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: It returns Doctor's information
+      tags:
+      - Doctors
 securityDefinitions:
   ApiKeyAuth:
     in: header

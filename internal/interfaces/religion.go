@@ -33,7 +33,18 @@ func GetAllReligions() []models.Religion {
 	return religions
 }
 
-func GetReligions(name string) (models.Religion, error) {
+func GetReligionsIdentifier(identifier string) (models.Religion, error) {
+	religion := models.Religion{}
+
+	err := colletionReligion.FindOne(context.TODO(), bson.M{"identifier": identifier}).Decode(&religion)
+	if err != nil {
+		return models.Religion{}, errors.New("No existe el elemento solicitado.")
+	}
+
+	return religion, nil
+}
+
+func GetReligionsName(name string) (models.Religion, error) {
 	religion := models.Religion{}
 
 	err := colletionReligion.FindOne(context.TODO(), bson.M{"name": name}).Decode(&religion)
@@ -45,7 +56,7 @@ func GetReligions(name string) (models.Religion, error) {
 }
 
 func CreateReligions(religion models.Religion) (models.Religion, error) {
-	_, err := GetReligions(religion.Name)
+	_, err := GetReligionsName(religion.Name)
 	if err == nil {
 		return models.Religion{}, errors.New("Ya existe el elemento.")
 	}

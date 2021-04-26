@@ -4,12 +4,20 @@ import (
 	_ "api_rest_sexual/docs"
 	"api_rest_sexual/internal/controllers"
 	"api_rest_sexual/internal/middlewares"
-	websocket2 "api_rest_sexual/internal/websocket"
+	"encoding/json"
+	"fmt"
+	"github.com/antoniodipinto/ikisocket"
 	swagger "github.com/arsmn/fiber-swagger/v2"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/monitor"
 )
+
+type MessageObject struct {
+	Data string `json:"data"`
+	From string `json:"from"`
+	To   string `json:"to"`
+}
 
 func Routers(app *fiber.App) {
 	// swagger
@@ -44,12 +52,37 @@ func Routers(app *fiber.App) {
 		v1Proteted := apiRouter.Group("/v1", middlewares.Protected())
 		{
 			routerArticles(v1Proteted)
+			routerUsers(v1Proteted)
 		}
 	}
 }
 
 func websocketRouter(router fiber.Router) {
-	router.Use("/chats", websocket2.ChatsWS)
+	router.Use("/online", ikisocket.New(func(kws *ikisocket.Websocket) {
+		fmt.Println(kws.UUID)
+	}))
+
+	ikisocket.On(ikisocket.EventConnect, func(payload *ikisocket.EventPayload) {
+		fmt.Println("connected")
+	})
+
+	ikisocket.On(ikisocket.EventDisconnect, func(payload *ikisocket.EventPayload) {
+		fmt.Println("closed")
+		fmt.Println(payload.SocketUUID)
+	})
+
+	ikisocket.On(ikisocket.EventMessage, func(payload *ikisocket.EventPayload) {
+		message := MessageObject{}
+		err := json.Unmarshal(payload.Data, &message)
+		if err != nil {
+			fmt.Println(err)
+			return
+		} else {
+			fmt.Println(message)
+		}
+
+		ikisocket.Broadcast([]byte("prueba de msg"))
+	})
 }
 
 func routerAuth(router fiber.Router) {
@@ -77,4 +110,10 @@ func routerArticles(router fiber.Router) {
 	router.Get("/articles", controllers.GetImageArticleSubtitle)
 	router.Post("/articles", controllers.CreateArticle)
 	router.Post("/articles/subtitle/:id/upload", controllers.UploadImageSubtitle)
+}
+
+func routerUsers(router fiber.Router) {
+	router.Patch("/users/:id", controllers.UpdateUsers)
+	router.Patch("/users/image", controllers.UpdateUsersImage)
+	router.Get("/users/info", controllers.InfoUsers)
 }

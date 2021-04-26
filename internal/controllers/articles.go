@@ -93,6 +93,8 @@ func CreateArticle(c *fiber.Ctx) error {
 	article.Title = articleRequest.Title
 	article.SubTitle = articleRequest.SubTitle
 	article.Category = articleRequest.Category
+	article.DoctorArticle = articleRequest.DoctorArticle
+	article.TextArticle = articleRequest.TextArticle
 	article.DateArticle = time.Now()
 
 	_, err := interfaces.CreateArticles(*article)
