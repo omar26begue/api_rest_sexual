@@ -4,6 +4,8 @@ import (
 	_ "api_rest_sexual/docs"
 	"api_rest_sexual/internal/controllers"
 	"api_rest_sexual/internal/middlewares"
+	"api_rest_sexual/internal/models"
+	"api_rest_sexual/internal/websocket"
 	"encoding/json"
 	"fmt"
 	"github.com/antoniodipinto/ikisocket"
@@ -11,6 +13,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/monitor"
+	"time"
 )
 
 type MessageObject struct {
@@ -59,29 +62,48 @@ func Routers(app *fiber.App) {
 
 func websocketRouter(router fiber.Router) {
 	router.Use("/online", ikisocket.New(func(kws *ikisocket.Websocket) {
+		websocket.OnlineUsers(kws)
+	}))
+
+	router.Use("/chats", ikisocket.New(func(kws *ikisocket.Websocket) {
+		kws.SetAttribute("type", "chats")
 		fmt.Println(kws.UUID)
 	}))
 
 	ikisocket.On(ikisocket.EventConnect, func(payload *ikisocket.EventPayload) {
-		fmt.Println("connected")
+		fmt.Println("connected online" + payload.Kws.GetStringAttribute("type"))
 	})
 
 	ikisocket.On(ikisocket.EventDisconnect, func(payload *ikisocket.EventPayload) {
-		fmt.Println("closed")
+		fmt.Println("closed online")
 		fmt.Println(payload.SocketUUID)
 	})
 
 	ikisocket.On(ikisocket.EventMessage, func(payload *ikisocket.EventPayload) {
-		message := MessageObject{}
-		err := json.Unmarshal(payload.Data, &message)
-		if err != nil {
-			fmt.Println(err)
-			return
-		} else {
-			fmt.Println(message)
-		}
+		switch payload.Kws.GetStringAttribute("type") {
+		case "online":
+			online := models.Online{}
+			err := json.Unmarshal(payload.Data, &online)
+			if err != nil {
+				fmt.Println(err)
+				return
+			} else {
+				online.Uuid = payload.SocketUUID
+				online.Time = time.Now()
 
-		ikisocket.Broadcast([]byte("prueba de msg"))
+				websocket.ImplementOnlineUsers(online)
+			}
+
+		case "chats":
+			message := MessageObject{}
+			err := json.Unmarshal(payload.Data, &message)
+			if err != nil {
+				fmt.Println(err)
+				return
+			} else {
+				fmt.Println(message)
+			}
+		}
 	})
 }
 

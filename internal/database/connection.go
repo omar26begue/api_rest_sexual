@@ -33,6 +33,7 @@ func GetConnectionMongoDB() {
 	interfaces.InitInterfaceSexualOrientation(db)
 	interfaces.InitInterfaceUsers(db)
 	interfaces.InitInterfaceArticles(db)
+	interfaces.InitInterfaceOnline(db)
 
 	return
 }
